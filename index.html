@@ -423,7 +423,7 @@
                 max-width: 100% !important;
                 padding: 0 !important;
             }
-            #homeScreen, #quizScreen, #resultsScreen, .admin-actions, .admin-link-btn, .admin-screen > p:first-of-type {
+            #homeScreen, #quizScreen, #resultsScreen, .admin-actions, .admin-link-btn, .admin-screen > p:first-of-type, .no-print {
                 display: none !important;
             }
             #adminScreen {
@@ -529,11 +529,15 @@
 
         <!-- 4. لوحة تحكم المنظمين المحمية -->
         <div id="adminScreen" class="screen admin-screen">
-            <!-- الترويسة الرسمية لتقرير الـ PDF -->
+            <!-- الترويسة الرسمية الجديدة لتقرير الـ PDF -->
             <div class="print-report-header">
-                <h3 style="color: #006633; font-size: 16px; margin-bottom: 4px;">الجمهورية الجزائرية الديمقراطية الشعبية</h3>
-                <h4 style="color: #222; font-size: 14px; margin-bottom: 4px;">نادي علوم المادة للذكاء الاصطناعي</h4>
-                <p style="color: #444; font-size: 13px; font-weight: bold;">التقرير الإداري لتقييم مدى نجاح نشاط: مسابقة "نوفمبر.. ذاكرة وطن ومستقبل أمة"</p>
+                <h3 style="color: #006633; font-size: 15px; margin-bottom: 3px;">الجمهورية الجزائرية الديمقراطية الشعبية</h3>
+                <h4 style="color: #222; font-size: 13px; margin-bottom: 3px;">وزارة التعليم العالي والبحث العلمي</h4>
+                <p style="color: #333; font-size: 13px; margin-bottom: 3px;">جامعة قاصدي مرباح ورقلة</p>
+                <p style="color: #333; font-size: 13px; margin-bottom: 3px;">كلية الرياضيات وعلوم المادة</p>
+                <p style="color: #006633; font-size: 14px; font-weight: bold; margin-top: 4px;">نادي علوم المادة للذكاء الإصطناعي - SMAIC</p>
+                <hr style="border: 0; border-top: 1px solid #006633; margin: 8px 0;">
+                <p style="color: #444; font-size: 12px; font-weight: bold;">التقرير الإداري لتقييم مدى نجاح نشاط مسابقة "نوفمبر.. ذاكرة وطن ومستقبل أمة"</p>
             </div>
 
             <!-- صندوق تقييم الأداء وملخص النجاح (يظهر فقط في الطباعة) -->
@@ -543,7 +547,7 @@
             </div>
 
             <h2>📊 سجل أسماء ونتائج المشاركين</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">لوحة تحكم خاصة بالمنظمين:</p>
+            <p class="no-print" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">لوحة تحكم خاصة بالمنظمين:</p>
             
             <div class="participants-table-container">
                 <table id="participantsTable">
@@ -563,7 +567,7 @@
             <!-- تذييل التقرير الرسمي للـ PDF -->
             <div class="print-footer">
                 <p><strong>خاتمة التقرير:</strong> حقق النشاط تفاعلاً معتبراً وإقبالاً واسعاً من طرف الطلبة، مما أسهم بفعالية في تعزيز الوعي التاريخي والوطني.</p>
-                <p style="margin-top: 5px;">إمضاء وتنظيم: نادي علوم المادة للذكاء الاصطناعي | تاريخ استخراج التقرير: <span id="printDate"></span></p>
+                <p style="margin-top: 5px;">إمضاء وتنظيم: نادي علوم المادة للذكاء الاصطناعي (SMAIC) | تاريخ استخراج التقرير: <span id="printDate"></span></p>
             </div>
 
             <div class="admin-actions">
@@ -572,7 +576,7 @@
                 <button class="btn" style="background: var(--primary); grid-column: span 2;" onclick="clearParticipantsData()">🗑️ تفريغ السجل</button>
             </div>
 
-            <button class="btn" style="background: #475569; margin-top: 15px;" onclick="closeAdminDashboard()">⬅️ العودة للرئيسية</button>
+            <!-- تمت إزالة زر العودة للرئيسية كما طلبتم -->
         </div>
     </div>
 
@@ -905,7 +909,7 @@
             document.getElementById("quizScreen").classList.remove("active");
             document.getElementById("resultsScreen").classList.add("active");
 
-            document.getElementById("playerGreeting", "بطلنا المجاهد: " + playerName).innerText = `بطلنا المجاهد: ${playerName}`;
+            document.getElementById("playerGreeting").innerText = `بطلنا المجاهد: ${playerName}`;
             document.getElementById("finalScore").innerText = score;
             document.getElementById("totalQuestions").innerText = activeQuizData.length;
 
@@ -940,20 +944,12 @@
             renderParticipantsTable();
         }
 
-        function closeAdminDashboard() {
-            document.getElementById("adminScreen").classList.remove("active");
-            document.getElementById("homeScreen").classList.add("active");
-            document.getElementById("playerName").value = "";
-            checkNameStatus();
-        }
-
         function renderParticipantsTable() {
             const tbody = document.getElementById("participantsTableBody");
             tbody.innerHTML = "";
             
             let participants = JSON.parse(localStorage.getItem("nov_quiz_participants")) || [];
 
-            // حساب المؤشرات لتقرير النجاح
             const totalParticipants = participants.length;
             const fullScores = participants.filter(p => p.score.startsWith('5')).length;
             const successRate = totalParticipants > 0 ? Math.round((fullScores / totalParticipants) * 100) : 0;
@@ -970,10 +966,11 @@
 
             participants.forEach((p, index) => {
                 const tr = document.createElement("tr");
+                const isPerfect = p.score.startsWith('5');
                 tr.innerHTML = `
                     <td>${index + 1}</td>
                     <td>${p.name}</td>
-                    <td><strong style="color: ${p.score.startsWith('5') ? 'var(--gold)' : 'var(--text-main)'};">${p.score}</strong></td>
+                    <td><strong style="color: ${isPerfect ? '#d97706' : 'var(--text-main)'};">${p.score}</strong></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -985,7 +982,7 @@
                 alert("لا توجد بيانات مشاركين لتصدير التقرير!");
                 return;
             }
-            renderParticipantsTable(); // تحديث إحصائيات التقرير قبل الطباعة
+            renderParticipantsTable();
             window.print();
         }
 
