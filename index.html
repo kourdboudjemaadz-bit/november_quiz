@@ -377,26 +377,37 @@
             color: var(--accent);
         }
 
-        /* عناصر خاصة بالتقرير الطباعي للـ PDF */
-        .print-header {
+        /* عناصر التقرير الرسمي المطبوع للـ PDF */
+        .print-report-header {
             display: none;
             text-align: center;
             margin-bottom: 20px;
             border-bottom: 3px double #006633;
-            padding-bottom: 15px;
+            padding-bottom: 12px;
+        }
+
+        .print-summary-box {
+            display: none;
+            border: 1px solid #006633;
+            background-color: #f8fafc;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #111;
         }
 
         .print-footer {
             display: none;
             text-align: center;
-            margin-top: 30px;
-            font-size: 12px;
+            margin-top: 35px;
+            font-size: 11px;
             color: #555;
             border-top: 1px solid #ddd;
             padding-top: 10px;
         }
 
-        /* تخصيص مظهر الطباعة وحفظ الـ PDF */
+        /* تنسيق الطباعة والتقارير الإدارية */
         @media print {
             body {
                 background: white !important;
@@ -418,13 +429,14 @@
             #adminScreen {
                 display: block !important;
             }
-            .print-header, .print-footer {
+            .print-report-header, .print-summary-box, .print-footer {
                 display: block !important;
             }
             #adminScreen h2 {
                 color: #006633 !important;
-                font-size: 20px !important;
-                margin-bottom: 15px !important;
+                font-size: 18px !important;
+                margin-bottom: 12px !important;
+                text-align: right !important;
             }
             .participants-table-container {
                 max-height: none !important;
@@ -440,7 +452,7 @@
             td, th {
                 border: 1px solid #cbd5e1 !important;
                 color: black !important;
-                padding: 10px !important;
+                padding: 8px !important;
             }
         }
     </style>
@@ -517,11 +529,17 @@
 
         <!-- 4. لوحة تحكم المنظمين المحمية -->
         <div id="adminScreen" class="screen admin-screen">
-            <!-- ترويسة مخصصة لملف الـ PDF الطباعي -->
-            <div class="print-header">
-                <h3 style="color: #006633; font-size: 18px; margin-bottom: 5px;">الجمهورية الجزائرية الديمقراطية الشعبية</h3>
-                <h4 style="color: #333; font-size: 15px; margin-bottom: 5px;">مسابقة الذاكرة التاريخية: نوفمبر.. ذاكرة وطن ومستقبل أمة</h4>
-                <p style="color: #666; font-size: 12px;">تقرير سجل أسماء ونتائج المشاركين في الفعالية</p>
+            <!-- الترويسة الرسمية لتقرير الـ PDF -->
+            <div class="print-report-header">
+                <h3 style="color: #006633; font-size: 16px; margin-bottom: 4px;">الجمهورية الجزائرية الديمقراطية الشعبية</h3>
+                <h4 style="color: #222; font-size: 14px; margin-bottom: 4px;">نادي علوم المادة للذكاء الاصطناعي</h4>
+                <p style="color: #444; font-size: 13px; font-weight: bold;">التقرير الإداري لتقييم مدى نجاح نشاط: مسابقة "نوفمبر.. ذاكرة وطن ومستقبل أمة"</p>
+            </div>
+
+            <!-- صندوق تقييم الأداء وملخص النجاح (يظهر فقط في الطباعة) -->
+            <div id="printSummary" class="print-summary-box">
+                <strong>📈 ملخص تقييم الفعالية ومؤشرات النجاح:</strong>
+                <p id="summaryText" style="margin-top: 5px; line-height: 1.5;"></p>
             </div>
 
             <h2>📊 سجل أسماء ونتائج المشاركين</h2>
@@ -542,13 +560,14 @@
                 </table>
             </div>
 
-            <!-- تذييل مخصص لملف الـ PDF الطباعي -->
+            <!-- تذييل التقرير الرسمي للـ PDF -->
             <div class="print-footer">
-                <p>تم استخراج هذا التقرير رسمياً من منصة المسابقة التفاعلية | جميع الحقوق محفوظة لنادي علوم المادة للذكاء الاصطناعي</p>
+                <p><strong>خاتمة التقرير:</strong> حقق النشاط تفاعلاً معتبراً وإقبالاً واسعاً من طرف الطلبة، مما أسهم بفعالية في تعزيز الوعي التاريخي والوطني.</p>
+                <p style="margin-top: 5px;">إمضاء وتنظيم: نادي علوم المادة للذكاء الاصطناعي | تاريخ استخراج التقرير: <span id="printDate"></span></p>
             </div>
 
             <div class="admin-actions">
-                <button class="btn" style="background: #0284c7;" onclick="printPDFReport()">🖨️ طباعة / حفظ PDF</button>
+                <button class="btn" style="background: #0284c7;" onclick="printPDFReport()">🖨️ طباعة تقرير النشاط PDF</button>
                 <button class="btn" style="background: #334155;" onclick="copyParticipantsList()">📋 نسخ القائمة</button>
                 <button class="btn" style="background: var(--primary); grid-column: span 2;" onclick="clearParticipantsData()">🗑️ تفريغ السجل</button>
             </div>
@@ -886,7 +905,7 @@
             document.getElementById("quizScreen").classList.remove("active");
             document.getElementById("resultsScreen").classList.add("active");
 
-            document.getElementById("playerGreeting").innerText = `بطلنا المجاهد: ${playerName}`;
+            document.getElementById("playerGreeting", "بطلنا المجاهد: " + playerName).innerText = `بطلنا المجاهد: ${playerName}`;
             document.getElementById("finalScore").innerText = score;
             document.getElementById("totalQuestions").innerText = activeQuizData.length;
 
@@ -934,6 +953,16 @@
             
             let participants = JSON.parse(localStorage.getItem("nov_quiz_participants")) || [];
 
+            // حساب المؤشرات لتقرير النجاح
+            const totalParticipants = participants.length;
+            const fullScores = participants.filter(p => p.score.startsWith('5')).length;
+            const successRate = totalParticipants > 0 ? Math.round((fullScores / totalParticipants) * 100) : 0;
+
+            document.getElementById("summaryText").innerText = 
+                `بلغ إجمالي عدد المشاركين المسجلين في الفعالية (${totalParticipants}) مشاركاً. عدد الحاصلين على العلامة الكاملة (5/5) هو (${fullScores}) مشاركاً، بنسبة نجاح وتميز بلغت (${successRate}%). لقد أظهر الطلبة تفاعلاً معرفياً وثقافياً عالياً يعكس مدى اهتمامهم بملحمة الثورة التحريرية المجيدة.`;
+
+            document.getElementById("printDate").innerText = new Date().toLocaleDateString('ar-DZ') + ' | ' + new Date().toLocaleTimeString('ar-DZ');
+
             if (participants.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">لا توجد مشاركات مسجلة حتى الآن.</td></tr>`;
                 return;
@@ -953,9 +982,10 @@
         function printPDFReport() {
             let participants = JSON.parse(localStorage.getItem("nov_quiz_participants")) || [];
             if (participants.length === 0) {
-                alert("لا توجد بيانات مشاركين لتصديرها!");
+                alert("لا توجد بيانات مشاركين لتصدير التقرير!");
                 return;
             }
+            renderParticipantsTable(); // تحديث إحصائيات التقرير قبل الطباعة
             window.print();
         }
 
