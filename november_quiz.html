@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي نوفمبر.. ذاكرة وطن ومستقبل أمة</title>
+    <!-- مكتبة المؤثرات الاحتفالية Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b1315;
+            --card-bg: #152226;
+            --primary: #dc2626; /* أحمر ثوري */
+            --secondary: #16a34a; /* أخضر وطني */
+            --accent: #ffffff; /* أبيض ناصع */
+            --gold: #f59e0b; /* ذهبي تزييني */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #112228 0%, var(--bg-color) 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(220, 38, 38, 0.15);
+            padding: 35px;
+            border-top: 6px solid var(--primary);
+            border-bottom: 6px solid var(--secondary);
+            border-right: 3px solid var(--accent);
+            border-left: 3px solid var(--accent);
+            position: relative;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* الشاشة الرئيسية */
+        .home-screen {
+            text-align: center;
+        }
+
+        .home-screen h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: var(--accent);
+            text-shadow: 0 2px 8px rgba(220,38,38,0.5);
+        }
+
+        .home-screen h2 {
+            font-size: 1.35rem;
+            margin-bottom: 15px;
+            color: var(--gold);
+            font-weight: 800;
+        }
+
+        .home-screen p {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-size: 1.05rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: 2px solid #334155;
+            background-color: #0b1315;
+            color: white;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--gold);
+            outline: none;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+        }
+
+        .alert-box {
+            background-color: rgba(220, 38, 38, 0.2);
+            border: 2px solid var(--primary);
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            display: none;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* الأزرار التفاعلية الحماسية */
+        .btn {
+            background: linear-gradient(135deg, var(--secondary), #059669);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 102, 51, 0.4);
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            opacity: 0.95;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 102, 51, 0.6);
+        }
+
+        .btn-disabled {
+            background: #475569 !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+
+        /* شاشة اللعبة */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #223038;
+            padding-bottom: 12px;
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .timer-badge {
+            background-color: #223038;
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: var(--gold);
+            font-weight: bold;
+            font-size: 1.05rem;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .question-box {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 22px;
+            line-height: 1.6;
+            color: var(--accent);
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: #0b1315;
+            border: 2px solid #2a3b42;
+            color: white;
+            padding: 16px 20px;
+            text-align: right;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--gold);
+            background-color: #1a2a30;
+            transform: scale(1.01);
+        }
+
+        .option-btn.correct {
+            background-color: rgba(22, 163, 74, 0.25);
+            border-color: var(--secondary);
+            color: #4ade80;
+            animation: pulseCorrect 0.4s;
+        }
+
+        .option-btn.wrong {
+            background-color: rgba(220, 38, 38, 0.25);
+            border-color: var(--primary);
+            color: #f87171;
+            animation: shake 0.4s;
+        }
+
+        @keyframes pulseCorrect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        /* نافذة الشرح التصحيحي */
+        .explanation-box {
+            background-color: #0b1315;
+            border-right: 5px solid var(--gold);
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 1rem;
+            line-height: 1.5;
+            animation: fadeIn 0.3s;
+        }
+
+        .explanation-box h4 {
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+
+        /* شاشة النتائج */
+        .results-screen {
+            text-align: center;
+        }
+
+        .results-screen h2 {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            color: var(--gold);
+        }
+
+        .score-card {
+            background-color: #0b1315;
+            padding: 22px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.25rem;
+            border: 2px solid #2a3b42;
+        }
+
+        .score-card span {
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+
+        /* صندوق الجائزة الخاصة بعلامة 5/5 */
+        .prize-box {
+            background: linear-gradient(135deg, rgba(22, 163, 74, 0.3), rgba(245, 158, 11, 0.3));
+            border: 3px dashed var(--gold);
+            padding: 20px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            display: none;
+            animation: prizeGlow 1.8s infinite alternate;
+        }
+
+        @keyframes prizeGlow {
+            0% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); transform: scale(1); }
+            100% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.6); transform: scale(1.02); }
+        }
+
+        .prize-box h3 {
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+
+        .prize-box p {
+            color: var(--accent);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-weight: bold;
+        }
+
+        /* لوحة التحكم وإدارة المشاركين */
+        .admin-screen {
+            text-align: right;
+        }
+
+        .admin-screen h2 {
+            color: var(--gold);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .participants-table-container {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 2px solid #2a3b42;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #2a3b42;
+            text-align: right;
+        }
+
+        th {
+            background-color: #0b1315;
+            color: var(--gold);
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: rgba(255,255,255,0.04);
+        }
+
+        .admin-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .admin-link-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            text-align: center;
+            transition: color 0.2s;
+        }
+
+        .admin-link-btn:hover {
+            color: var(--accent);
+        }
+
+        /* عناصر خاصة بالتقرير الطباعي للـ PDF */
+        .print-header {
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 3px double #006633;
+            padding-bottom: 15px;
+        }
+
+        .print-footer {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #555;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        /* تخصيص مظهر الطباعة وحفظ الـ PDF */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                display: block !important;
+                padding: 15px !important;
+            }
+            .container {
+                box-shadow: none !important;
+                border: none !important;
+                background: white !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            #homeScreen, #quizScreen, #resultsScreen, .admin-actions, .admin-link-btn, .admin-screen > p:first-of-type {
+                display: none !important;
+            }
+            #adminScreen {
+                display: block !important;
+            }
+            .print-header, .print-footer {
+                display: block !important;
+            }
+            #adminScreen h2 {
+                color: #006633 !important;
+                font-size: 20px !important;
+                margin-bottom: 15px !important;
+            }
+            .participants-table-container {
+                max-height: none !important;
+                border: 2px solid #006633 !important;
+                border-radius: 6px !important;
+            }
+            th {
+                background-color: #006633 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            td, th {
+                border: 1px solid #cbd5e1 !important;
+                color: black !important;
+                padding: 10px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 1. الشاشة الرئيسية -->
+        <div id="homeScreen" class="screen home-screen active">
+            <h1>🇩🇿 مسابقة الذاكرة التاريخية</h1>
+            <h2>تحدي: نوفمبر.. ذاكرة وطن ومستقبل أمة</h2>
+            <p>أثبت جدارتك التاريخية، اختبر معلوماتك، ونافس بقوة!</p>
+            
+            <div id="alertBox" class="alert-box">
+                ⚠️ عذراً! لقد شاركت في هذا التحدي مسبقاً، ولا يحق لك إعادة المحاولة بنفس الاسم.
+            </div>
+
+            <div class="input-group">
+                <label for="playerName">أدخل اسمك الكريم:</label>
+                <input type="text" id="playerName" placeholder="مثال: العربي بن مهيدي" autocomplete="off" oninput="checkNameStatus()">
+            </div>
+            
+            <button id="startBtn" class="btn" onclick="startQuiz()">🚀 ابدأ التحدي الآن</button>
+
+            <!-- زر خفي للوصول للوحة التحكم عبر Ctrl + Shift + A -->
+            <button class="admin-link-btn" onclick="requestAdminAccess()">إعدادات المنظمين</button>
+        </div>
+
+        <!-- 2. شاشة الأسئلة -->
+        <div id="quizScreen" class="screen">
+            <div class="quiz-header">
+                <span id="questionProgress">السؤال 1 من 5</span>
+                <span class="timer-badge">⏳ <span id="timeLeft">15</span>ث</span>
+            </div>
+
+            <div class="question-box" id="questionText">
+                جاري تحميل السؤال...
+            </div>
+
+            <div class="options-list" id="optionsList">
+                <!-- خيارات الإجابة -->
+            </div>
+
+            <div id="explanationBox" class="explanation-box">
+                <h4>💡 إضاءة تاريخية:</h4>
+                <p id="explanationText"></p>
+            </div>
+
+            <button id="nextBtn" class="btn" style="display: none;" onclick="nextQuestion()">السؤال التالي ⬅️</button>
+        </div>
+
+        <!-- 3. شاشة النتائج -->
+        <div id="resultsScreen" class="screen results-screen">
+            <h2>🏆 تم اعتماد نتيجتك بنجاح!</h2>
+            <p id="playerGreeting" style="font-size: 1.1rem; color: var(--text-muted);"></p>
+            
+            <div class="score-card">
+                نتيجتك النهائية هي: <br>
+                <span id="finalScore">0</span> / <span id="totalQuestions">5</span>
+            </div>
+
+            <!-- رسالة الجائزة الخاصة بـ 5/5 مع التوجيه المباشر الحماسي -->
+            <div id="prizeBox" class="prize-box">
+                <h3>🎉 مبروك عليك العلامة الكاملة! 🏅</h3>
+                <p>لا تغادر هذه الصفحة؛ قم بالتوجه مباشرة إلى <strong>طاولة نادي علوم المادة للذكاء الاصطناعي</strong> لاستلام جائزتك بكل فخر!</p>
+            </div>
+            
+            <p id="rankMessage" style="margin-bottom: 20px; font-weight: bold; font-size: 1.1rem;"></p>
+
+            <p style="color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid #2a3b42; padding-top: 15px;">
+                🔒 تنبيه: تم حفظ اسمك في سجل المشاركين، ولا يُسمح بإعادة المحاولة.
+            </p>
+        </div>
+
+        <!-- 4. لوحة تحكم المنظمين المحمية -->
+        <div id="adminScreen" class="screen admin-screen">
+            <!-- ترويسة مخصصة لملف الـ PDF الطباعي -->
+            <div class="print-header">
+                <h3 style="color: #006633; font-size: 18px; margin-bottom: 5px;">الجمهورية الجزائرية الديمقراطية الشعبية</h3>
+                <h4 style="color: #333; font-size: 15px; margin-bottom: 5px;">مسابقة الذاكرة التاريخية: نوفمبر.. ذاكرة وطن ومستقبل أمة</h4>
+                <p style="color: #666; font-size: 12px;">تقرير سجل أسماء ونتائج المشاركين في الفعالية</p>
+            </div>
+
+            <h2>📊 سجل أسماء ونتائج المشاركين</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">لوحة تحكم خاصة بالمنظمين:</p>
+            
+            <div class="participants-table-container">
+                <table id="participantsTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>اسم المتسابق</th>
+                            <th>النتيجة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="participantsTableBody">
+                        <!-- بيانات المشاركين -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- تذييل مخصص لملف الـ PDF الطباعي -->
+            <div class="print-footer">
+                <p>تم استخراج هذا التقرير رسمياً من منصة المسابقة التفاعلية | جميع الحقوق محفوظة لنادي علوم المادة للذكاء الاصطناعي</p>
+            </div>
+
+            <div class="admin-actions">
+                <button class="btn" style="background: #0284c7;" onclick="printPDFReport()">🖨️ طباعة / حفظ PDF</button>
+                <button class="btn" style="background: #334155;" onclick="copyParticipantsList()">📋 نسخ القائمة</button>
+                <button class="btn" style="background: var(--primary); grid-column: span 2;" onclick="clearParticipantsData()">🗑️ تفريغ السجل</button>
+            </div>
+
+            <button class="btn" style="background: #475569; margin-top: 15px;" onclick="closeAdminDashboard()">⬅️ العودة للرئيسية</button>
+        </div>
+    </div>
+
+    <script>
+        const masterQuizData = [
+            {
+                question: "في أي سنة وتاريخ اندلعت رسمياً ثورة التحرير الوطني الجزائري؟",
+                options: ["5 جويلية 1830", "1 نوفمبر 1954", "8 ماي 1945", "19 أوت 1962"],
+                answer: 1,
+                explanation: "اندلعت الثورة ليلة الأول من نوفمبر 1954 بضربات موجعة استهدفت المصالح الاستعمارية في مختلف مناطق الوطن."
+            },
+            {
+                question: "من هو قائد المنطقة التاريخية الأولى (الأوراس الأبطال) ليلة اندلاع الثورة؟",
+                options: ["مصطفى بن بولعيد", "ديدوش مراد", "العربي بن مهيدي", "رابح بيطاط"],
+                answer: 0,
+                explanation: "القائد الرمز مصطفى بن بولعيد 'أبو الثورة' قاد المنطقة الأولى الأوراس وعُرف بحنكته العسكرية والسياسية الكبيرة."
+            },
+            {
+                question: "ما هو اسم الوثيقة السياسية الأساسية التي وُجهت للشعب الجزائري ليلة اندلاع الثورة؟",
+                options: ["بيان سويسرا", "ميثاق طرابلس", "بيان أول نوفمبر 1954", "اتفاقيات إيفيان"],
+                answer: 2,
+                explanation: "بيان أول نوفمبر هو الوثيقة التاريخية التي حددت أهداف الثورة، مرجعيتها، ونداءً جامعاً لكل الجزائريين للالتفاف حول الكفاح المسلح."
+            },
+            {
+                question: "أي مؤتمر تاريخي وضع الهياكل التنظيمية والتشريعية للثورة عام 1956؟",
+                options: ["مؤتمر الباندونغ", "مؤتمر الصومام", "مؤتمر طرابلس", "مؤتمر مرسيليا"],
+                answer: 1,
+                explanation: "عُقد مؤتمر الصومام في 20 أوت 1956 بمنطقة القبائل، ونظم مؤسسات الثورة وخططها السياسية والعسكرية."
+            },
+            {
+                question: "من صاحب المقولة الخالدة: 'ألقوا الثورة إلى الشارع يحضنها الشعب'؟",
+                options: ["العربي بن مهيدي", "زيغود يوسف", "عبان رمضان", "بوقرة أحمد"],
+                answer: 0,
+                explanation: "الشهيد البطل العربي بن مهيدي عُرف بشجاعته وابتسامته الساخرة أمام جلاديه، ومقولته الشهيرة التي تؤكد ارتباط الثورة بالشعب."
+            },
+            {
+                question: "متى تم توقيع اتفاقيات إيفيان التي أقرت وقف إطلاق النار واستقلال الجزائر؟",
+                options: ["18 مارس 1962", "5 جويلية 1962", "1 نوفمبر 1954", "20 أوت 1956"],
+                answer: 0,
+                explanation: "توقيع اتفاقيات إيفيان كان في 18 مارس 1962، والتي تلتها مرحلة الاستفتاء ثم إعلان الاستقلال الرسمي."
+            },
+            {
+                question: "ما هي المعركة الكبرى التي قادها الشهيد زيغود يوسف في الشمال القسنطيني في 20 أوت 1955؟",
+                options: ["معركة الجرف", "هجوم الشمال القسنطيني", "معركة الجزائر", "معركة باب الواد"],
+                answer: 1,
+                explanation: "هجمات الشمال القسنطيني في 20 أوت 1955 فكت الخناق عن منطقة الأوراس ونقلت المعركة لعمق العدو."
+            },
+            {
+                question: "من هو أول رئيس للجمهورية الجزائرية الديمقراطية الشعبية بعد الاستقلال؟",
+                options: ["هواري بومدين", "احمد بن بلة", "فرحات عباس", "بن يوسف بن خدة"],
+                answer: 1,
+                explanation: "تولى أحمد بن بلة رئاسة أول جمهورية جزائرية مستقلة سنة 1962."
+            },
+            {
+                question: "ما هي الحكومة التي أعلنت جبهة التحرير الوطني عن تأسيسها في القاهرة بتاريخ 19 سبتمبر 1958 برئاسة فرحات عباس؟",
+                options: ["المجلس الوطني للثورة", "الحكومة المؤقتة للجمهورية الجزائرية (GPRA)", "لجنة التنسيق والتنفيذ", "حركة انتصار الحريات"],
+                answer: 1,
+                explanation: "تأسست الحكومة المؤقتة للجمهورية الجزائرية (GPRA) لتمثيل الثورة دبلوماسياً في المحافل الدولية وإسماع صوت الجزائر."
+            },
+            {
+                question: "في أي محفل دولي بارز شاركت جبهة التحرير الوطني ممثلة للثورة الجزائرية لأول مرة عام 1955؟",
+                options: ["مؤتمر باندونغ بإندونيسيا", "مؤتمر يالطا", "قمة عدم الانحياز ببلغراد", "مؤتمر جنيف"],
+                answer: 0,
+                explanation: "شكّل مؤتمر باندونغ (أبريل 1955) المنصة الدولية الأولى التي أبرزت القضية الجزائرية على نطاق عالمي واسع."
+            },
+            {
+                question: "من هي الشهيدة البطلة التي ألهمت ملحمة 'معركة الجزائر' وعُرفت بعملياتها الفدائية قبل استشهادها عام 1957؟",
+                options: ["جميلة بوحيرد", "حسيبة بن بوعلي", "زهرة ظريف", "لالة فاطمة ننسومر"],
+                answer: 1,
+                explanation: "الشهيدة حسيبة بن بوعلي رمز الفداء النسوي، استشهدت في متفجرة القصبة بمعية البطل علي لابوانت وعمر الصغيرة وحميد بوحميدي."
+            },
+            {
+                question: "ما هو اسم الخطوط الشائكة والمكهربة التي أقامها الاستعمار الفرنسي على الحدود لعزل الثورة عن إمداداتها؟",
+                options: ["خط موريس وشارل", "خط غاستون موريل", "خط ماجينو الصحراوي", "خط السد الأخضر"],
+                answer: 0,
+                explanation: "خط موريس (شرقاً) وخط شارل (غرباً) شُكلا كعقبات مكهربة ومزودة بالألغام لمحاصرة جيش التحرير الوطني."
+            },
+            {
+                question: "عُرفت المعركة الضارية التي وقعت بولاية تبسة (منطقة الجرف) سنة 1955 بأنها من أطول وأشرس المعارك، فمن قادها؟",
+                options: ["أحمد بن بلة", "قيادات الولاية الأولى (بلحاج بوشريط وعمرو إدريس)", "زيغود يوسف", "العقيد لطفي"],
+                answer: 1,
+                explanation: "معركة الجرف الكبرى استمرت لأيام وألحقت خسائر فادحة بالعدو الفرنسي، وأثبتت قدرة جيش التحرير على حرب النظاميات."
+            },
+            {
+                question: "من هو الشاعر الجزائري الكبير صاحب القصيدة الخالدة 'جزائرنا يا بلاد الجدود'؟",
+                options: ["مفدي زكريا", "محمد العيد آل خليفة", "أحمد سحنون", "رابي بومدين"],
+                answer: 1,
+                explanation: "الشاعر الكبير محمد العيد آل خليفة يُعد من أعلام الشعر الجزائري الذي واكب شعره كل مراحل الكفاح الوطني."
+            }
+        ];
+
+        const ADMIN_PIN = "1954"; 
+
+        let activeQuizData = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let playerName = "";
+        let timer = null;
+        let timeLeft = 15;
+
+        // اختصار لوحة المفاتيح للوصول الخفي (Ctrl + Shift + A)
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'a') {
+                event.preventDefault();
+                requestAdminAccess();
+            }
+        });
+
+        function requestAdminAccess() {
+            let enteredPin = prompt("🔒 يرجى إدخال الرمز السري الخاص بالمنظمين:");
+            if (enteredPin === ADMIN_PIN) {
+                openAdminDashboard();
+            } else if (enteredPin !== null) {
+                alert("❌ الرمز السري غير صحيح!");
+            }
+        }
+
+        function getPersonalizedRandomQuestions(name, count) {
+            let seed = 0;
+            const cleanName = name.trim().toLowerCase();
+            for (let i = 0; i < cleanName.length; i++) {
+                seed = (seed << 5) - seed + cleanName.charCodeAt(i);
+                seed |= 0;
+            }
+
+            function pseudoRandom() {
+                seed = (seed * 9301 + 49297) % 233280;
+                return seed / 233280;
+            }
+
+            let shuffled = [...masterQuizData];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(pseudoRandom() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            return shuffled.slice(0, count);
+        }
+
+        function checkNameStatus() {
+            const nameInput = document.getElementById("playerName").value.trim().toLowerCase();
+            const alertBox = document.getElementById("alertBox");
+            const startBtn = document.getElementById("startBtn");
+
+            if (!nameInput) {
+                alertBox.style.display = "none";
+                startBtn.disabled = false;
+                startBtn.classList.remove("btn-disabled");
+                return;
+            }
+
+            let participants = JSON.parse(localStorage.getItem("nov_quiz_participants")) || [];
+            let registeredNames = participants.map(p => p.name.toLowerCase());
+
+            if (registeredNames.includes(nameInput)) {
+                alertBox.style.display = "block";
+                startBtn.disabled = true;
+                startBtn.classList.add("btn-disabled");
+            } else {
+                alertBox.style.display = "none";
+                startBtn.disabled = false;
+                startBtn.classList.remove("btn-disabled");
+            }
+        }
+
+        function startQuiz() {
+            const nameInput = document.getElementById("playerName").value.trim();
+            if (!nameInput) {
+                alert("من فضلك أدخل اسمك الكريم لنبدأ التحدي!");
+                return;
+            }
+
+            const lowerName = nameInput.toLowerCase();
+            let participants = JSON.parse(localStorage.getItem("nov_quiz_participants")) || [];
+            let registeredNames = participants.map(p => p.name.toLowerCase());
+
+            if (registeredNames.includes(lowerName)) {
+                alert("عذراً، هذا الاسم شارك مسبقاً ولا يحق له الإعادة!");
+                return;
+            }
+
+            playerName = nameInput;
+            activeQuizData = getPersonalizedRandomQuestions(playerName, 5);
+            currentQuestionIndex = 0;
+            score = 0;
+
+            document.getElementById("homeScreen").classList.remove("active");
+            document.getElementById("quizScreen").classList.add("active");
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (timer) clearInterval(timer);
+            
+            timeLeft = 15;
+            document.getElementById("timeLeft").innerText = timeLeft;
+            startTimer();
+
+            const currentQ = activeQuizData[currentQuestionIndex];
+            document.getElementById("questionProgress").innerText = `السؤال ${currentQuestionIndex + 1} من ${activeQuizData.length}`;
+            document.getElementById("questionText").innerText = currentQ.question;
+
+            const optionsList = document.getElementById("optionsList");
+            optionsList.innerHTML = "";
+            document.getElementById("explanationBox").style.display = "none";
+            document.getElementById("nextBtn").style.display = "none";
+
+            currentQ.options.forEach((option, index) => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerText = option;
+                btn.onclick = () => selectAnswer(index);
+                optionsList.appendChild(btn);
+            });
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timeLeft").innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            if (timer) clearInterval(timer);
+            const currentQ = activeQuizData[currentQuestionIndex];
+            const buttons = document.querySelectorAll(".option-btn");
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === currentQ.answer) {
+                    btn.classList.add("correct");
+                }
+            });
+            showExplanation(false, "انتهت مهلة الفرصة المتاحة لهذا السؤال!");
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (timer) clearInterval(timer);
+            const currentQ = activeQuizData[currentQuestionIndex];
+            const buttons = document.querySelectorAll(".option-btn");
+
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (selectedIndex === currentQ.answer) {
+                buttons[selectedIndex].classList.add("correct");
+                score++;
+                showExplanation(true, currentQ.explanation);
+            } else {
+                buttons[selectedIndex].classList.add("wrong");
+                buttons[currentQ.answer].classList.add("correct");
+                showExplanation(false, currentQ.explanation);
+            }
+        }
+
+        function showExplanation(isCorrect, text) {
+            const expBox = document.getElementById("explanationBox");
+            const expText = document.getElementById("explanationText");
+            
+            expBox.style.display = "block";
+            expText.innerHTML = (isCorrect ? "<strong style='color:#4ade80;'>إجابة صحيحة! كفو يا بطل 👏</strong>" : "<strong style='color:#f87171;'>إجابة خاطئة. </strong>") + text;
+            
+            const nextBtn = document.getElementById("nextBtn");
+            nextBtn.style.display = "block";
+        }
+
+        function nextQuestion() {
+            if (timer) clearInterval(timer);
+            currentQuestionIndex++;
+            if (currentQuestionIndex < activeQuizData.length) {
+                loadQuestion();
+            } else {
+                finishQuizAndLockUser();
+            }
+        }
+
+        function finishQuizAndLockUser() {
+            if (timer) clearInterval(timer);
+            let participants = JSON.parse(localStorage.getItem("nov_quiz_participants")) || [];
+            let registeredNames = participants.map(p => p.name.toLowerCase());
+
+            if (!registeredNames.includes(playerName.toLowerCase())) {
+                participants.push({
+                    name: playerName,
+                    score: `${score}/${activeQuizData.length}`,
+                    date: new Date().toLocaleTimeString('ar-DZ')
+                });
+                localStorage.setItem("nov_quiz_participants", JSON.stringify(participants));
+            }
+
+            document.getElementById("quizScreen").classList.remove("active");
+            document.getElementById("resultsScreen").classList.add("active");
+
+            document.getElementById("playerGreeting").innerText = `بطلنا المجاهد: ${playerName}`;
+            document.getElementById("finalScore").innerText = score;
+            document.getElementById("totalQuestions").innerText = activeQuizData.length;
+
+            let rankMsg = "";
+            const prizeBox = document.getElementById("prizeBox");
+
+            if (score === activeQuizData.length) {
+                prizeBox.style.display = "block";
+                rankMsg = "🎖️ إنجاز عظيم واستثنائي! حققت العلامة التامة بجدارة.";
+                
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            } else if (score >= 3) {
+                prizeBox.style.display = "none";
+                rankMsg = "⭐ أداء رائع وممتاز! لديك رصيد تاريخي مشرف.";
+            } else {
+                prizeBox.style.display = "none";
+                rankMsg = "📚 شكراً لمشاركتك المتميزة في إحياء ذكرى الثورة المجيدة.";
+            }
+            document.getElementById("rankMessage").innerText = rankMsg;
+        }
+
+        function openAdminDashboard() {
+            if (timer) clearInterval(timer);
+            document.getElementById("homeScreen").classList.remove("active");
+            document.getElementById("quizScreen").classList.remove("active");
+            document.getElementById("resultsScreen").classList.remove("active");
+            document.getElementById("adminScreen").classList.add("active");
+            renderParticipantsTable();
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById("adminScreen").classList.remove("active");
+            document.getElementById("homeScreen").classList.add("active");
+            document.getElementById("playerName").value = "";
+            checkNameStatus();
+        }
+
+        function renderParticipantsTable() {
+            const tbody = document.getElementById("participantsTableBody");
+            tbody.innerHTML = "";
+            
+            let participants = JSON.parse(localStorage.getItem("nov_quiz_participants")) || [];
+
+            if (participants.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">لا توجد مشاركات مسجلة حتى الآن.</td></tr>`;
+                return;
+            }
+
+            participants.forEach((p, index) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${p.name}</td>
+                    <td><strong style="color: ${p.score.startsWith('5') ? 'var(--gold)' : 'var(--text-main)'};">${p.score}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function printPDFReport() {
+            let participants = JSON.parse(localStorage.getItem("nov_quiz_participants")) || [];
+            if (participants.length === 0) {
+                alert("لا توجد بيانات مشاركين لتصديرها!");
+                return;
+            }
+            window.print();
+        }
+
+        function copyParticipantsList() {
+            let participants = JSON.parse(localStorage.getItem("nov_quiz_participants")) || [];
+            if (participants.length === 0) {
+                alert("لا توجد بيانات لنسخها!");
+                return;
+            }
+
+            let textToCopy = "قائمة المشاركين في مسابقة (نوفمبر.. ذاكرة وطن ومستقبل أمة):\n\n";
+            participants.forEach((p, i) => {
+                textToCopy += `${i + 1}. الاسم: ${p.name} - النتيجة: ${p.score}\n`;
+            });
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("تم بنجاح نسخ قائمة المشاركين إلى الحافظة!");
+            });
+        }
+
+        function clearParticipantsData() {
+            if (confirm("هل أنت متأكد من رغبتك في تفريغ سجل المشاركين بالكامل؟ لا يمكن التراجع عن هذا الإجراء.")) {
+                localStorage.removeItem("nov_quiz_participants");
+                renderParticipantsTable();
+                alert("تم مسح السجل بنجاح.");
+            }
+        }
+    </script>
+</body>
+</html>
